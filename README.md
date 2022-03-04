@@ -2,4 +2,4 @@
  Mods for VRChat
 
 ## Dependencies
- This mod use [UIExpansionKit](https://github.com/knah/VRCMods)
+ This mod uses [UIExpansionKit](https://github.com/knah/VRCMods)
