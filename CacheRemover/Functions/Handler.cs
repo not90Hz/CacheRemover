@@ -26,6 +26,10 @@ namespace CacheRemover.Functions
 
         public static string DebugText = "";
 
+        public static string LastWorld = null;
+
+        public static string CurrentWorld = null;
+
         public static void Setup()
         {
             //--Get LocalLow path of your machine
@@ -33,7 +37,7 @@ namespace CacheRemover.Functions
 
             Check();
 
-            Logger.Msg("Initialized.");
+            Logger.Msg("Initialized!");
 
             Logger.Msg(string.Format("In \"{0}\" you can set the config to True (using) or False (not using) to use the mod functions.", ModConfigPath + ModConfigFile));
 
@@ -54,13 +58,17 @@ namespace CacheRemover.Functions
             if (File.Exists(ModConfigPath + ModConfigFile)) RemoveFiles = bool.Parse(File.ReadAllText(ModConfigPath + ModConfigFile));
         }
 
-        public static void RemoveCache()
+        public static void RemoveCache(bool close)
         {
             try
             {
                 //--Check if the bool is true
                 if (RemoveFiles)
                 {
+                    int deletedFiles = 0;
+                    int deletedFolders = 0;
+                    int notdeletedFiles = 0;
+                    int notdeletedFolders = 0;
                     DirectoryInfo di = new DirectoryInfo(LocalLowPath + VRChatCachePath);
                     foreach (DirectoryInfo dir in di.GetDirectories())
                     {
@@ -70,30 +78,33 @@ namespace CacheRemover.Functions
                             {
                                 //--Delete file
                                 file.Delete();
-                                //--Check if file got deleted
-                                if (!File.Exists(file.FullName)) Logger.Msg(string.Format("\"{0}\" has been deleted.", file.FullName));
+
+                                //--Deleted files amount + 1
+                                deletedFiles++;
                             }
                             catch
                             {
-                                //--Log that the file is still used
-                                Logger.Msg(string.Format("\"{0}\" is still used.", file.FullName));
+                                //--Not deleted files amount + 1
+                                notdeletedFiles++;
                             }
                         }
                         try
                         {
                             //--Delete folder
                             dir.Delete(true);
-                            //--Check if folder got deleted
-                            if (!Directory.Exists(dir.FullName)) Logger.Msg(string.Format("\"{0}\" has been deleted.", dir.FullName));
+
+                            //--Deleted folders amount + 1
+                            deletedFolders++;
                         }
                         catch
                         {
-                            //--Log that the folder is still used
-                            Logger.Msg(string.Format("\"{0}\" is still used.", dir.FullName));
+                            //--Not deleted folders amount + 1
+                            notdeletedFolders++;
                         }
                     }
                     Logger.Warning("VRChat cache has been deleted.");
-                    Logger.Msg("Closing game now.");
+                    Logger.Msg(string.Format("Removed: Files={0} | Folders={1}", deletedFiles.ToString(), deletedFolders.ToString()));
+                    Logger.Msg(string.Format("Couldnt Remove: Files={0} | Folders={1}", notdeletedFiles.ToString(), notdeletedFolders.ToString()));
                 }
                 else
                 {
