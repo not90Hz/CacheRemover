@@ -11,11 +11,7 @@
 
         public const string Name = "CacheRemover";
 
-<<<<<<< Updated upstream
-        public const string Version = "0.0.1";
-=======
-        public const string Version = "0.0.2";
->>>>>>> Stashed changes
+        public const string Version = "0.0.3";
 
     }
 }

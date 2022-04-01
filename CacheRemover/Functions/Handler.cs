@@ -1,75 +1,65 @@
 ﻿using MelonLoader;
 using System;
 using System.IO;
+using CacheRemover.Internals;
 
 namespace CacheRemover.Functions
 {
     class Handler
     {
-        //--%appdata%\LocalLow
-        public static string LocalLowPath = null;
-
-        //--%appdata%\LocalLow\VRChat\VRChat\Cache-WindowsPlayer
-        public static string VRChatCachePath = @"\VRChat\VRChat\Cache-WindowsPlayer";
-
-        //--Mod config path
-        public static string ModConfigPath = Directory.GetCurrentDirectory() + @"\UserData\CacheRemover";
-
-        //--Mod config file
-        public static string ModConfigFile = @"\config.txt";
-
-        //--Mod cache file
-        public static string ModDebugFile = @"\cache.txt";
-
-        //--Bool that checks if the files should get removed or not
-        public static bool RemoveFiles = false;
-
-        public static string DebugText = "";
-
-        public static string LastWorld = null;
-
-        public static string CurrentWorld = null;
 
         public static void Setup()
         {
             //--Get LocalLow path of your machine
-            LocalLowPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).Replace("Roaming", "LocalLow");
+            Struct.LocalLowPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).Replace("Roaming", "LocalLow");
 
-            Check();
+            Load();
 
             Logger.Msg("Initialized!");
-
-            Logger.Msg(string.Format("In \"{0}\" you can set the config to True (using) or False (not using) to use the mod functions.", ModConfigPath + ModConfigFile));
-
         }
 
-        public static void Check()
+        public static void Load()
         {
             //--Create folder if it not exists
-            if (!Directory.Exists(ModConfigPath)) Directory.CreateDirectory(ModConfigPath);
+            if (!Directory.Exists(Struct.ModConfigPath)) Directory.CreateDirectory(Struct.ModConfigPath);
 
             //--Check if config file exists and create it if not
-            if (!File.Exists(ModConfigPath + ModConfigFile))
+            if (!File.Exists(Struct.ModConfigPath + Struct.ModConfigFile))
             {
-                File.WriteAllText(ModConfigPath + ModConfigFile, "True");
+                File.WriteAllText(Struct.ModConfigPath + Struct.ModConfigFile, "True");
             }
 
             //--Get bool that has been set in the config
-            if (File.Exists(ModConfigPath + ModConfigFile)) RemoveFiles = bool.Parse(File.ReadAllText(ModConfigPath + ModConfigFile));
+            if (File.Exists(Struct.ModConfigPath + Struct.ModConfigFile)) Struct.RemoveFiles = bool.Parse(File.ReadAllText(Struct.ModConfigPath + Struct.ModConfigFile));
         }
 
-        public static void RemoveCache(bool close)
+        public static void Save()
+        {
+            //--Create folder if it not exists
+            if (!Directory.Exists(Struct.ModConfigPath)) Directory.CreateDirectory(Struct.ModConfigPath);
+
+            //--Check if config file exists and create it if not
+            if (!File.Exists(Struct.ModConfigPath + Struct.ModConfigFile))
+            {
+                File.WriteAllText(Struct.ModConfigPath + Struct.ModConfigFile, "True");
+            }
+
+            //--Set bool that has been set in the local config
+            if (File.Exists(Struct.ModConfigPath + Struct.ModConfigFile)) File.WriteAllText(Struct.ModConfigPath + Struct.ModConfigFile, Struct.RemoveFiles.ToString());
+        }
+
+        public static void RemoveCache()
         {
             try
             {
                 //--Check if the bool is true
-                if (RemoveFiles)
+                if (Struct.RemoveFiles)
                 {
                     int deletedFiles = 0;
                     int deletedFolders = 0;
                     int notdeletedFiles = 0;
                     int notdeletedFolders = 0;
-                    DirectoryInfo di = new DirectoryInfo(LocalLowPath + VRChatCachePath);
+                    DirectoryInfo di = new DirectoryInfo(Struct.LocalLowPath + Struct.VRChatCachePath);
                     foreach (DirectoryInfo dir in di.GetDirectories())
                     {
                         foreach (FileInfo file in dir.GetFiles())
@@ -109,7 +99,6 @@ namespace CacheRemover.Functions
                 else
                 {
                     Logger.Warning("VRChat cache has not been deleted.");
-                    Logger.Msg("Closing game now.");
                 }
             }
             catch (Exception e)
@@ -122,11 +111,11 @@ namespace CacheRemover.Functions
         {
             try
             {
-                if (!File.Exists(ModConfigPath + ModDebugFile)) File.WriteAllText(ModConfigPath + ModDebugFile, "Nothing here...");
+                if (!File.Exists(Struct.ModConfigPath + Struct.ModDebugFile)) File.WriteAllText(Struct.ModConfigPath + Struct.ModDebugFile, "Nothing here...");
 
-                if (File.Exists(ModConfigPath + ModDebugFile))
+                if (File.Exists(Struct.ModConfigPath + Struct.ModDebugFile))
                 {
-                    File.WriteAllText(ModConfigPath + ModDebugFile, DebugText);
+                    File.WriteAllText(Struct.ModConfigPath + Struct.ModDebugFile, Struct.DebugText);
                 }
             }
             catch{}
