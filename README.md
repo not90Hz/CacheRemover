@@ -4,4 +4,4 @@ This is a mod for VRChat using [MelonLoader](https://melonwiki.xyz/#/).
 This mod is used to improve the disk usage while and after playing the game.
 
 ## Dependencies
- Coming soon...
+ [ReMod.Core](https://github.com/RequiDev/ReMod.Core/releases)
